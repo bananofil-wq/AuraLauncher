@@ -143,7 +143,7 @@ fun Home(favorites: List<AuraApp>, launch:(AuraApp)->Unit, drawer:()->Unit, focu
     }
 }
 @Composable fun Quick(icon:androidx.compose.ui.graphics.vector.ImageVector,label:String,modifier:Modifier=Modifier) {
-    Surface(modifier,height=62.dp,shape=RoundedCornerShape(22.dp),color=Color.White.copy(.065f)) {
+    Surface(modifier=modifier.height(62.dp),shape=RoundedCornerShape(22.dp),color=Color.White.copy(.065f)) {
         Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
             Icon(icon,null,tint=Color.White.copy(.75f),modifier=Modifier.size(20.dp)); Text(label,color=Color.White.copy(.7f),fontSize=11.sp)
         }
