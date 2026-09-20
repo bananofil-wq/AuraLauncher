@@ -4,6 +4,8 @@ import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.os.Bundle
 import android.provider.Settings
+import android.provider.MediaStore
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -107,7 +109,7 @@ fun Home(favorites: List<AuraApp>, launch:(AuraApp)->Unit, drawer:()->Unit, focu
                 Row(Modifier.fillMaxWidth(), verticalAlignment=Alignment.CenterVertically) {
                     Icon(Icons.Outlined.WbSunny,null,tint=Color(0xFFFFC45C),modifier=Modifier.size(32.dp))
                     Spacer(Modifier.width(12.dp))
-                    Column(Modifier.weight(1f)) { Text("14°",color=Color.White,fontSize=27.sp); Text("Väder",color=Color.White.copy(.45f),fontSize=12.sp) }
+                    Column(Modifier.weight(1f)) { Text("Väder",color=Color.White,fontSize=20.sp); Text("Ingen platsdata krävs",color=Color.White.copy(.45f),fontSize=12.sp) }
                     VerticalDivider(Modifier.height(46.dp),color=Color.White.copy(.1f))
                     Spacer(Modifier.width(16.dp))
                     Column { Text("Nästa",color=Color.White.copy(.4f),fontSize=12.sp); Text("Din dag",color=Color.White,fontSize=16.sp); Text("Tryck för kalender",color=Color.White.copy(.4f),fontSize=11.sp) }
@@ -126,10 +128,17 @@ fun Home(favorites: List<AuraApp>, launch:(AuraApp)->Unit, drawer:()->Unit, focu
                 }
                 Spacer(Modifier.height(24.dp))
             }
+            val ctx = LocalContext.current
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceEvenly) {
-                CircleAction(Icons.Outlined.Phone,"Telefon")
-                CircleAction(Icons.Outlined.Message,"Meddelanden")
-                CircleAction(Icons.Outlined.Apps,"Appar",drawer)
+                CircleAction(Icons.Outlined.Phone,"Telefon") {
+                    ctx.startActivity(Intent(Intent.ACTION_DIAL))
+                }
+                CircleAction(Icons.Outlined.Message,"Meddelanden") {
+                    ctx.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:")))
+                }
+                CircleAction(Icons.Outlined.CameraAlt,"Kamera") {
+                    ctx.startActivity(Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA))
+                }
                 CircleAction(Icons.Outlined.Settings,"Inställningar",settings)
             }
             Spacer(Modifier.height(42.dp))
