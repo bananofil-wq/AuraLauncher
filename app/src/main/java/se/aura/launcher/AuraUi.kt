@@ -405,7 +405,7 @@ private fun DockSlot(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun AppDrawer(
     apps: List<AuraApp>,
