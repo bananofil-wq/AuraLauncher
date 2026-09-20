@@ -1,35 +1,60 @@
 name: Build Aura Launcher APK
+
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
+      - name: Restore stable Aura preview signing key
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: aura-preview-signing-v1
+
+      - name: Ensure stable preview signing key
+        run: |
+          mkdir -p ~/.android
+          if [ ! -f ~/.android/debug.keystore ]; then
+            keytool -genkeypair               -keystore ~/.android/debug.keystore               -storepass android               -alias androiddebugkey               -keypass android               -keyalg RSA               -keysize 2048               -validity 10000               -dname "CN=Aura Preview,O=Aura,C=SE"
+          fi
+
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - run: gradle assembleDebug
+
+      - name: Build debug APK
+        run: gradle assembleDebug
+
       - uses: actions/upload-artifact@v4
         with:
-          name: AuraLauncher-1.0
+          name: AuraLauncher-2.0-${{ github.run_number }}
           path: app/build/outputs/apk/debug/app-debug.apk
-      - name: Publish latest APK
+
+      - name: Prepare release APK
         run: |
           mkdir -p release
-          cp app/build/outputs/apk/debug/app-debug.apk release/AuraLauncher.apk
+          cp app/build/outputs/apk/debug/app-debug.apk release/AuraLauncher-2.0.apk
+
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0-latest
-          name: Aura Launcher 1.0
-          files: release/AuraLauncher.apk
+          tag_name: v2-preview
+          name: Aura Launcher 2.0 Preview
+          files: release/AuraLauncher-2.0.apk
           make_latest: true
-          prerelease: false
+          prerelease: true
+          overwrite_files: true
