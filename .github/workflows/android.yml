@@ -3,6 +3,8 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,5 +20,16 @@ jobs:
       - run: gradle assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: AuraLauncher-debug
+          name: AuraLauncher-1.0
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Publish latest APK
+        run: |
+          mkdir -p release
+          cp app/build/outputs/apk/debug/app-debug.apk release/AuraLauncher.apk
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0-latest
+          name: Aura Launcher 1.0
+          files: release/AuraLauncher.apk
+          make_latest: true
+          prerelease: false
