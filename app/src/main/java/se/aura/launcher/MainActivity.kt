@@ -1,6 +1,7 @@
 package se.aura.launcher
 
 import android.content.Intent
+import android.app.role.RoleManager
 import android.content.pm.ResolveInfo
 import android.os.Bundle
 import android.provider.Settings
@@ -46,6 +47,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         window.statusBarColor = android.graphics.Color.TRANSPARENT
         window.navigationBarColor = android.graphics.Color.BLACK
+
+        val roleManager = getSystemService(RoleManager::class.java)
+        if (roleManager.isRoleAvailable(RoleManager.ROLE_HOME) &&
+            !roleManager.isRoleHeld(RoleManager.ROLE_HOME)
+        ) {
+            startActivityForResult(
+                roleManager.createRequestRoleIntent(RoleManager.ROLE_HOME),
+                1001
+            )
+        }
+
         setContent { Aura(loadApps()) { launch(it) } }
     }
     private fun loadApps(): List<AuraApp> {
